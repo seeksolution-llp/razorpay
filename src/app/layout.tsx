@@ -16,7 +16,27 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        
+      <header className="bg-gray-800 text-white p-4 flex justify-between items-center">
+      <div className="text-xl">Logo</div>
+      <nav>
+        <ul className="flex space-x-4">
+          <li>
+            <a href="/" className="hover:text-gray-300">Home</a>
+          </li>
+          <li>
+            <a href="/buy" className="hover:text-gray-300">Buy</a>
+          </li>
+          <li>
+            <a href="/subcription" className="hover:text-gray-300">Subscription</a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+        
+        {children}</body>
+        
     </html>
   );
 }
