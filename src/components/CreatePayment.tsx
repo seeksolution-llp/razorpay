@@ -1,11 +1,31 @@
 "use client"
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import crypto from 'crypto';
 import { useRouter } from 'next/navigation';
+import { Button } from 'antd';
 
 
 function CreatePayment() {
    const router = useRouter()
+  const [loadings, setLoadings] = useState<boolean[]>([]);
+
+
+
+   const enterLoading = (index: number) => {
+    setLoadings((prevLoadings) => {
+      const newLoadings = [...prevLoadings];
+      newLoadings[index] = true;
+      return newLoadings;
+    });
+
+    setTimeout(() => {
+      setLoadings((prevLoadings) => {
+        const newLoadings = [...prevLoadings];
+        newLoadings[index] = false;
+        return newLoadings;
+      });
+    }, 6000);
+  }
     
     useEffect(() => {
         const script = document.createElement('script');
@@ -18,6 +38,7 @@ function CreatePayment() {
     }, []);
 
     const handlePayment = async (price: number) => {
+        enterLoading(0)
         const response = await fetch('/api', {
             method: 'POST',
             headers: {
@@ -36,11 +57,12 @@ function CreatePayment() {
             description: 'Test Payment',
             image: '/your_logo.png',
             order_id: data.id, // Use the order ID from your server
-            handler: function (response: any) {
+            handler: async function  (response: any) {
                 // alert(response.razorpay_payment_id);
                 console.log("payment details-------", response);
-
-                verification(response,)
+              const verify =  await verification(response,)
+                            console.log("verify",verify);
+                            
             },
             prefill: {
                 name: 'John Doe',
@@ -55,6 +77,7 @@ function CreatePayment() {
             },
         };
         const rzp = new window.Razorpay(options);
+        setLoadings([false])
         rzp.open();
     };
 
@@ -70,13 +93,8 @@ function CreatePayment() {
             const searchParam = new URLSearchParams({
                id: razorpay_payment_id
               });
-
-
-
-
-
-
             router.push(`/status?${searchParam.toString()}`)
+            return true;
         }
     }
 
@@ -193,13 +211,14 @@ function CreatePayment() {
                                         placeholder="ZIP"
                                     />
                                 </div>
-                                <button
+                                <Button
+                                    loading={loadings[0]} 
                                     onClick={() => handlePayment(2999)}
-                                    className="mt-8 border border-transparent hover:border-gray-300 dark:bg-white dark:hover:bg-gray-900 dark:text-gray-900 dark:hover:text-white dark:border-transparent bg-gray-900 hover:bg-white text-white hover:text-gray-900 flex justify-center items-center py-4 rounded w-full">
+                                    className="mt-8 border border-transparent hover:border-gray-300 dark:bg-white dark:hover:bg-gray-900 dark:text-gray-900 dark:hover:text-white dark:border-transparent bg-gray-900 hover:bg-white text-white hover:text-gray-900 flex justify-center items-center py-5 rounded w-full">
                                     <div>
                                         <p className="text-base leading-4">Pay Amount 2999</p>
                                     </div>
-                                </button>
+                                </Button>
                             </div>
                         </div>
                     </div>

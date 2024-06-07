@@ -1,10 +1,13 @@
 "use client"
 
+import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 
 
 
 const Subscription = () => {
+
+  const route = useRouter()
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -16,22 +19,22 @@ const Subscription = () => {
     document.body.appendChild(script);
   }, []);
 
-  const handler = async (planId:string,amount:number) => {
+  const handler = async (planId: string, amount: number) => {
 
-    const response = await fetch('/api/subscription', {
+    const response = await fetch('/api/subscription/create', {
       method: 'POST',
       headers: {
-          'Content-Type': 'application/json',
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({ plan_id: planId, price: amount }),
-  });
+    });
 
-  const data = await response.json();
-  console.log("Order created", data);
+    const data = await response.json();
+    console.log("subscription created", data);
 
 
 
-    
+
 
 
     const options = {
@@ -40,9 +43,9 @@ const Subscription = () => {
       name: "Seek solution.",
       description: "Monthly Test Plan",
       image: "/your_logo.jpg",
-      handler: function (response: any) {
+      handler: async function (response: any) {
         console.log("callback function after payment-----", response);
-
+        subscriptionStatus(data)
       },
       prefill: {
         name: "Gaurav Kumar",
@@ -59,38 +62,28 @@ const Subscription = () => {
     };
 
     const rzp1 = await new window.Razorpay(options);
-     await rzp1.open();
+    await rzp1.open();
+
+
+    const subscriptionStatus = async (data:any) => {
+      const {status,start_at,expire_by,id} = data
+      
+      const searchParam = new URLSearchParams({
+        status:status,
+        startTime:start_at,
+        expireTime:expire_by,
+        id:id
+       });
+       route.push(`/subcription/status?${searchParam.toString()}`)
+     return true;
+    }
   }
 
 
 
 
   return (
-    // <div className="flex justify-center items-center h-screen bg-gray-100">
-    //   <div className="grid grid-cols-3 gap-8">
-    //     <SubscriptionCard
-    //       planName="brown Plan"
-    //       price="100"
-    //       details="Lorem ipsum dolor sit amet."
-    //       buttonText="Checkout"
-    //       handlePayment={() => handler()}
-    //     />
-    //     <SubscriptionCard
-    //       planName="Silver Plan"
-    //       price="200"
-    //       details="Lorem ipsum dolor sit amet."
-    //       buttonText="Checkout"
-    //       handlePayment={() => handler()}
-    //     />
-    //     <SubscriptionCard
-    //       planName="Gold Plan"
-    //       price="300"
-    //       details="Lorem ipsum dolor sit amet."
-    //       buttonText="Checkout"
-    //       handlePayment={() => handler()}
-    //     />
-    //   </div>
-    // </div>
+  
     <div>
       <main className="max-w-6xl mx-auto pt-10 pb-36 px-8">
         <h1 className="text-lg font-bold">Your Subscription</h1>
@@ -117,7 +110,7 @@ const Subscription = () => {
                 <span className="block text-2xl font-semibold">Basic</span>
                 <span>
                   <span className="font-medium text-gray-500 text-xl align-top">
-                  ₹&thinsp;
+                    ₹&thinsp;
                   </span>
                   <span className="text-3xl font-bold">199 </span>
                 </span>
@@ -145,7 +138,7 @@ const Subscription = () => {
               </li>
             </ul>
             <a
-              onClick={()=>handler("plan_O7z6kHlcbHZybA",199)}
+              onClick={() => handler("plan_O7z6kHlcbHZybA", 199)}
               href="#/"
               className="flex justify-center items-center bg-indigo-600 rounded-xl py-5 px-4 text-center text-white text-xl transition delay-150 duration-300 ease-in-out transition duration-500 ease-in-out bg-blue-500 hover:bg-green-500 transform hover:-translate-y-1 hover:scale-110 "
             >
@@ -165,7 +158,7 @@ const Subscription = () => {
                 </span>
                 <span>
                   <span className="font-medium text-xl align-top">
-                  ₹&thinsp;
+                    ₹&thinsp;
                   </span>
                   <span className="text-3xl font-bold text-white">99 </span>
                 </span>
@@ -194,7 +187,7 @@ const Subscription = () => {
             </ul>
             <a
 
-              onClick={() => handler("plan_O7z5sfK0DR12x3",99)}
+              onClick={() => handler("plan_O7z5sfK0DR12x3", 99)}
               className="flex justify-center items-center bg-indigo-600 rounded-xl py-6 px-4 text-center text-white text-2xl transition delay-150 duration-300 ease-in-out transition duration-500 ease-in-out bg-blue-500 hover:bg-green-500 transform hover:-translate-y-1 hover:scale-110 "
             >
               Basic Plan
@@ -211,7 +204,7 @@ const Subscription = () => {
                 <span className="block text-2xl font-semibold">Enterprise</span>
                 <span>
                   <span className="font-medium text-gray-500 text-xl align-top">
-                  ₹&thinsp;
+                    ₹&thinsp;
                   </span>
                   <span className="text-3xl font-bold">249 </span>
                 </span>
@@ -239,7 +232,7 @@ const Subscription = () => {
               </li>
             </ul>
             <a
-              onClick={()=>handler("plan_O7z7UQyj4nlTxW",249)}
+              onClick={() => handler("plan_O7z7UQyj4nlTxW", 249)}
               href="#/"
               className="flex justify-center items-center bg-indigo-600 rounded-xl py-5 px-4 text-center text-white text-xl transition delay-150 duration-300 ease-in-out transition duration-500 ease-in-out bg-blue-500 hover:bg-green-500 transform hover:-translate-y-1 hover:scale-110 "
             >
